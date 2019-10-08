@@ -1,0 +1,12 @@
+platform :ios, '9.0'
+use_frameworks!
+
+target 'demo' do
+  
+	pod 'Alamofire'
+  pod 'AlamofireObjectMapper'
+	pod 'SwiftyJSON'
+  
+  pod 'SDK-iOS', :path => "../sdk"
+  
+end
