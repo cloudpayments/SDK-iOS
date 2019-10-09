@@ -7,6 +7,7 @@ target 'demo' do
   pod 'AlamofireObjectMapper'
 	pod 'SwiftyJSON'
   
-  pod 'SDK-iOS', :path => "../sdk"
+  #pod 'SDK-iOS', :path => "../sdk"
+  pod 'SDK-iOS', :git =>  "https://github.com/cloudpayments/SDK-iOS", :branch => "master"
   
 end
