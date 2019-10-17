@@ -94,39 +94,6 @@
     return([NSData dataWithBytes:&c_key[idx] length:len - idx]);
 }
 
-#pragma mark - Public messages
-+(BOOL) isCardNumberValid: (NSString *) cardNumberString {
-    NSString *cleanCardNumber = [Card cleanCreditCardNo:cardNumberString];
-    
-    if (cleanCardNumber.length == 0) {
-        return NO;
-    }
-    
-    NSMutableArray *cardNumberCharactersArray = [[NSMutableArray alloc] initWithCapacity:[cleanCardNumber length]];
-    for (int i=0; i < [cleanCardNumber length]; i++) {
-        NSString *ichar  = [NSString stringWithFormat:@"%c", [cleanCardNumber characterAtIndex:i]];
-        [cardNumberCharactersArray addObject:ichar];
-    }
-    
-    // INFO: one of Luhn algorithm implementation
-    BOOL isOdd = YES;
-    int oddSum = 0;
-    int evenSum = 0;
-    
-    for (int i = (int)[cleanCardNumber length] - 1; i >= 0; i--) {
-        int digit = [(NSString *)[cardNumberCharactersArray objectAtIndex:i] intValue];
-        if (isOdd) {
-            oddSum += digit;
-        } else {
-            evenSum += digit/5 + (2*digit) % 10;
-        }
-        
-        isOdd = !isOdd;
-    }
-    
-    return ((oddSum + evenSum) % 10 == 0);
-}
-
 -(NSString *) makeCardCryptogramPacket: (NSString *) cardNumberString andExpDate: (NSString *) expDateString andCVV: (NSString *) CVVString andMerchantPublicID: (NSString *) merchantPublicIDString {
     
     // ExpDate must be in YYMM format
@@ -160,6 +127,79 @@
     return (NSString *) packetString;
 }
 
+#pragma mark - Public messages
++(BOOL) isCardNumberValid: (NSString *) cardNumberString {
+    NSString *cleanCardNumber = [Card cleanCreditCardNo:cardNumberString];
+    
+    if (cleanCardNumber.length == 0) {
+        return NO;
+    }
+    
+    NSMutableArray *cardNumberCharactersArray = [[NSMutableArray alloc] initWithCapacity:[cleanCardNumber length]];
+    for (int i=0; i < [cleanCardNumber length]; i++) {
+        NSString *ichar  = [NSString stringWithFormat:@"%c", [cleanCardNumber characterAtIndex:i]];
+        [cardNumberCharactersArray addObject:ichar];
+    }
+    
+    // INFO: one of Luhn algorithm implementation
+    BOOL isOdd = YES;
+    int oddSum = 0;
+    int evenSum = 0;
+    
+    for (int i = (int)[cleanCardNumber length] - 1; i >= 0; i--) {
+        int digit = [(NSString *)[cardNumberCharactersArray objectAtIndex:i] intValue];
+        if (isOdd) {
+            oddSum += digit;
+        } else {
+            evenSum += digit/5 + (2*digit) % 10;
+        }
+        
+        isOdd = !isOdd;
+    }
+    
+    return ((oddSum + evenSum) % 10 == 0);
+}
+
++ (BOOL)isExpDateValid:(NSString *)expDateString {
+    
+    if (expDateString.length != 5) {
+        return false;
+    }
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"MM/yy"];
+    NSDate *date = [dateFormatter dateFromString:expDateString];
+    
+    // get last day of the current month
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    [calendar setTimeZone:[NSTimeZone systemTimeZone]];
+
+    NSRange dayRange = [ calendar rangeOfUnit:NSCalendarUnitDay
+                                       inUnit:NSCalendarUnitMonth
+                                      forDate:date];
+
+    NSInteger numberOfDaysInCurrentMonth = dayRange.length;
+
+    NSDateComponents *comp = [calendar components:
+                              NSCalendarUnitYear |
+                              NSCalendarUnitMonth |
+                              NSCalendarUnitDay fromDate:date];
+
+    comp.day = numberOfDaysInCurrentMonth;
+    comp.hour = 24;
+    comp.minute = 0;
+    comp.second = 0;
+
+    date = [calendar dateFromComponents:comp];
+    
+    NSDate *now = [NSDate new];
+    
+    if([date compare: now] == NSOrderedDescending){
+        return true;
+    }
+    
+    return false;
+}
 
 +(CardType) cardTypeFromCardNumber:(NSString *)cardNumberString {
     NSString *cleanCardNumber = [Card cleanCreditCardNo:cardNumberString];
@@ -212,7 +252,6 @@
     
     return Unknown;
 }
-
 
 +(NSString *) cardTypeToString:(CardType)cardType {
     

@@ -43,6 +43,13 @@ Card.isCardNumberValid(cardNumber)
 
 ```
 
+* Проверка срока действия карты
+
+```
+Card.isExpDateValid(expDate) // expDate в формате MM/yy
+
+```
+
 * Определение типа платежной системы
 
 ```

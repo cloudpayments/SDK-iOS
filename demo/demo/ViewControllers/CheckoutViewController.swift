@@ -51,22 +51,24 @@ class CheckoutViewController: UIViewController, D3DSDelegate {
     
     @IBAction func onPayClick(_ sender: Any) {
         
-         // Получаем введенные данные банковской карты
-               guard let cardNumber = textCardNumber.text, !cardNumber.isEmpty else {
-                   self.showAlert(title: .errorWord, message: .enterCardNumber)
-                   return
-               }
+        // Получаем введенные данные банковской карты и проверяем их корректность
+        guard let cardNumber = textCardNumber.text, !cardNumber.isEmpty else {
+            self.showAlert(title: .errorWord, message: .enterCardNumber)
+            return
+        }
                
-               if !Card.isCardNumberValid(cardNumber) {
-                   self.showAlert(title: .errorWord, message: .enterCorrectCardNumber)
-                   return
-               }
-        
         if !Card.isCardNumberValid(cardNumber) {
+            self.showAlert(title: .errorWord, message: .enterCorrectCardNumber)
             return
         }
         
         guard let expDate = textExpDate.text, expDate.count == 5 else {
+            self.showAlert(title: .errorWord, message: .enterExpirationDate)
+            return
+        }
+        
+        // Срок действия в формате MM/yy
+        if !Card.isExpDateValid(expDate) {
             self.showAlert(title: .errorWord, message: .enterExpirationDate)
             return
         }

@@ -15,6 +15,11 @@ typedef enum {
 
 +(BOOL) isCardNumberValid: (NSString *) cardNumberString;
 
++(BOOL) isExpDateValid: (NSString *) expDateString;
+
++(CardType) cardTypeFromCardNumber:(NSString *)cardNumberString;
++(NSString *) cardTypeToString:(CardType)cardType;
+
 /**
  * Create cryptogram
  *    cardNumberString    valid card number stirng
@@ -23,8 +28,5 @@ typedef enum {
  *     storePublicID        public_id of store
  */
 -(NSString *) makeCardCryptogramPacket: (NSString *) cardNumberString andExpDate: (NSString *) expDateString andCVV: (NSString *) CVVString andMerchantPublicID: (NSString *) merchantPublicIDString;
-
-+(CardType) cardTypeFromCardNumber:(NSString *)cardNumberString;
-+(NSString *) cardTypeToString:(CardType)cardType;
 @end
 
