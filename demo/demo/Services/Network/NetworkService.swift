@@ -9,7 +9,6 @@ class NetworkService {
     init(sessionManager: SessionManager = SessionManager.default) {
         self.sessionManager = sessionManager
     }
-    
 }
 
 // MARK: - Internal methods
@@ -23,7 +22,6 @@ extension NetworkService {
     func makeArrayRequest<T: BaseMappable>(_ request: HTTPRequest, completion: @escaping (Result<[T]>) -> Void) {
         validatedDataRequest(from: request).responseArray(keyPath: request.mappingKeyPath) { completion($0.result) }
     }
-    
 }
 
 // MARK: - Private methods
@@ -40,5 +38,4 @@ private extension NetworkService {
                      headers: httpRequest.headers)
             .validate()
     }
-    
 }

@@ -192,7 +192,6 @@ private extension CheckoutViewController {
                 
                 let transactionId = String(describing: transactionResponse.transaction?.transactionId ?? 0)
                 
-                //let transactionId = transactionResponse.transaction!.transactionId
                 let paReq = transactionResponse.transaction!.paReq
                 let acsUrl = transactionResponse.transaction!.acsUrl
                                

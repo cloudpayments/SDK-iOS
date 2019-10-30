@@ -13,7 +13,7 @@ struct HTTPRequest {
     let mappingKeyPath: String?
     
     init(resource: HTTPResource,
-         method: HTTPMethod = .get,
+         method: HTTPMethod = .post,
          headers: HTTPHeaders = [:],
          parameters: Parameters = [:],
          
