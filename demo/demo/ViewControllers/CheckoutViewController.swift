@@ -6,7 +6,31 @@
 import UIKit
 import PassKit
 
-class CheckoutViewController: UIViewController, D3DSDelegate {
+class CheckoutViewController: UIViewController, D3DSDelegate, CPCardApiDelegate {
+
+    func didFinish(_ info: BinInfo!) {
+        
+        if let bankName = info.bankName {
+            print("BankName: \(bankName)")
+        } else {
+            print("BankName is empty")
+        }
+        
+        if let logoUrl = info.logoUrl {
+            print("LogoUrl: \(logoUrl)")
+        } else {
+            print("LogoUrl is empty")
+        }
+     }
+    
+    func didFailWithError(_ message: String!) {
+        
+        if let error = message {
+            print("error: \(error)")
+        } else {
+            print("Error")
+        }
+    }
     
     func authorizationCompleted(withMD md: String!, andPares paRes: String!) {
         post3ds(transactionId: md, paRes: paRes)
@@ -14,7 +38,7 @@ class CheckoutViewController: UIViewController, D3DSDelegate {
     
     func authorizationFailed(withHtml html: String!) {
         self.showAlert(title: .errorWord, message: html)
-        print("error: \(html)")
+        print("error: \(html!)")
     }
     
     @IBOutlet weak var labelTotal: UILabel!
@@ -61,6 +85,10 @@ class CheckoutViewController: UIViewController, D3DSDelegate {
             self.showAlert(title: .errorWord, message: .enterCorrectCardNumber)
             return
         }
+        
+        let api : CPCardApi = CPCardApi.init()
+        api.delegate = self
+        api.getBinInfo(cardNumber)
         
         guard let expDate = textExpDate.text, expDate.count == 5 else {
             self.showAlert(title: .errorWord, message: .enterExpirationDate)

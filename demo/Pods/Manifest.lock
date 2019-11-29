@@ -10,7 +10,7 @@ PODS:
 DEPENDENCIES:
   - Alamofire
   - AlamofireObjectMapper
-  - SDK-iOS (from `https://github.com/cloudpayments/SDK-iOS`, branch `master`)
+  - SDK-iOS (from `../sdk`)
   - SwiftyJSON
 
 SPEC REPOS:
@@ -22,21 +22,15 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   SDK-iOS:
-    :branch: master
-    :git: https://github.com/cloudpayments/SDK-iOS
-
-CHECKOUT OPTIONS:
-  SDK-iOS:
-    :commit: e1384b2b6d9b2e909d33832cde22845fe6a636f2
-    :git: https://github.com/cloudpayments/SDK-iOS
+    :path: "../sdk"
 
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   AlamofireObjectMapper: 92b6ce2423a9d159e686f6a1d514a009bf903ddc
   ObjectMapper: 0d4402610f4e468903ae64629eec4784531e5c51
-  SDK-iOS: 3d1bb56c31abedf01c122daff14324472ed393e6
+  SDK-iOS: 73d61f1cc5191d73f34e7eacc73f4acd74a104b7
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
 
-PODFILE CHECKSUM: ac153bd47fc417776a022ec04af32100f8f2fa09
+PODFILE CHECKSUM: 11593f2034a04e077197e75718d03b58693bb3f3
 
 COCOAPODS: 1.8.4

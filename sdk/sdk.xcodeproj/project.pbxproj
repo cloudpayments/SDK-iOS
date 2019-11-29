@@ -16,6 +16,8 @@
 		133417D223439CE300AC4CBA /* PKPaymentConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 133417D023439CE300AC4CBA /* PKPaymentConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		133417D323439CE300AC4CBA /* PKPaymentConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 133417D123439CE300AC4CBA /* PKPaymentConverter.m */; };
 		134298DA2339F6A7009C744C /* sdk.h in Headers */ = {isa = PBXBuildFile; fileRef = 134298D82339F6A7009C744C /* sdk.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1391E7E5238809B8007F570A /* CPCardApi.m in Sources */ = {isa = PBXBuildFile; fileRef = 1391E7E4238809B8007F570A /* CPCardApi.m */; };
+		13B111DF238FE69700C9A50E /* BinInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B111DE238FE69700C9A50E /* BinInfo.m */; };
 		DBBC2C55234B2F140066D546 /* libPods-sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DBBC2C54234B2EBD0066D546 /* libPods-sdk.a */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +43,10 @@
 		134298D52339F6A7009C744C /* sdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = sdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		134298D82339F6A7009C744C /* sdk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sdk.h; sourceTree = "<group>"; };
 		134298D92339F6A7009C744C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1391E7E22388077A007F570A /* BinInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BinInfo.h; sourceTree = "<group>"; };
+		1391E7E323880874007F570A /* CPCardApi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CPCardApi.h; sourceTree = "<group>"; };
+		1391E7E4238809B8007F570A /* CPCardApi.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CPCardApi.m; sourceTree = "<group>"; };
+		13B111DE238FE69700C9A50E /* BinInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BinInfo.m; sourceTree = "<group>"; };
 		307294EEB72911D2DAED3DD5 /* Pods-sdk.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sdk.debug.xcconfig"; path = "Target Support Files/Pods-sdk/Pods-sdk.debug.xcconfig"; sourceTree = "<group>"; };
 		38FD7FE7A394026DA9109488 /* libPods-sdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-sdk.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3662A2752AAC20A5F64E933 /* Pods-sdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sdk.release.xcconfig"; path = "Target Support Files/Pods-sdk/Pods-sdk.release.xcconfig"; sourceTree = "<group>"; };
@@ -62,6 +68,7 @@
 		13182328233CC08A004BEC5B /* Card */ = {
 			isa = PBXGroup;
 			children = (
+				1391E7DF2388047F007F570A /* Api */,
 				13182332233CC0E5004BEC5B /* Card.h */,
 				13182333233CC0E5004BEC5B /* Card.m */,
 			);
@@ -117,6 +124,25 @@
 				134298D92339F6A7009C744C /* Info.plist */,
 			);
 			path = sdk;
+			sourceTree = "<group>";
+		};
+		1391E7DF2388047F007F570A /* Api */ = {
+			isa = PBXGroup;
+			children = (
+				1391E7E123880765007F570A /* Models */,
+				1391E7E323880874007F570A /* CPCardApi.h */,
+				1391E7E4238809B8007F570A /* CPCardApi.m */,
+			);
+			path = Api;
+			sourceTree = "<group>";
+		};
+		1391E7E123880765007F570A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1391E7E22388077A007F570A /* BinInfo.h */,
+				13B111DE238FE69700C9A50E /* BinInfo.m */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		56108F60403365713C797564 /* Frameworks */ = {
@@ -265,6 +291,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1391E7E5238809B8007F570A /* CPCardApi.m in Sources */,
+				13B111DF238FE69700C9A50E /* BinInfo.m in Sources */,
 				133417D323439CE300AC4CBA /* PKPaymentConverter.m in Sources */,
 				13182331233CC0DC004BEC5B /* NSDataENBase64.m in Sources */,
 				13182335233CC0E5004BEC5B /* Card.m in Sources */,

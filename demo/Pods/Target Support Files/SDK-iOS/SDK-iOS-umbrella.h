@@ -11,6 +11,8 @@
 #endif
 
 #import "D3DS.h"
+#import "CPCardApi.h"
+#import "BinInfo.h"
 #import "Card.h"
 #import "sdk.h"
 #import "NSDataENBase64.h"

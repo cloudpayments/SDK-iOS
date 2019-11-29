@@ -23,6 +23,7 @@ pod 'SDK-iOS', :git =>  "https://github.com/cloudpayments/SDK-iOS", :branch => "
 
 ```
 #import <SDK-iOS/sdk/sdk/Card/Card.h> // Создание критограммы 
+#import <SDK-iOS/sdk/sdk/Card/Api/CPCardApi.h> // Получение информации о банке по номеру карты
 #import <SDK-iOS/sdk/sdk/3DS/D3DS.h> // Обработка 3DS формы
 #import <SDK-iOS/sdk/sdk/Utils/PKPaymentConverter.h> // Работа c Apple Pay
 ```
@@ -31,9 +32,9 @@ pod 'SDK-iOS', :git =>  "https://github.com/cloudpayments/SDK-iOS", :branch => "
 
 ### Структура проекта:
 
-* **api/** - Пример файлов для проведения платежа через ваш сервер
-* **demo/** - Пример реализации приложения с использованием SDK
-* **sdk/** - Исходный код SDK
+* **api** - Пример файлов для проведения платежа через ваш сервер
+* **demo** - Пример реализации приложения с использованием SDK
+* **sdk** - Исходный код SDK
 
 
 ### Подготовка к работе
@@ -66,6 +67,39 @@ Card.isExpDateValid(expDate) // expDate в формате MM/yy
 ```
 Card.cardType(toString: Card.cardType(fromCardNumber: textField.text))
 
+```
+
+* Определение банка эмитента
+
+```
+let api : CPCardApi = CPCardApi.init()
+        api.delegate = self
+        api.getBinInfo(cardNumber)
+
+	// Результат можно получить в методах делигата CPCardApiDelegate
+	func didFinish(_ info: BinInfo!) {
+        
+        if let bankName = info.bankName {
+            print("BankName: \(bankName)")
+        } else {
+            print("BankName is empty")
+        }
+        
+        if let logoUrl = info.logoUrl {
+            print("LogoUrl: \(logoUrl)")
+        } else {
+            print("LogoUrl is empty")
+        }
+     }
+    
+    func didFailWithError(_ message: String!) {
+        
+        if let error = message {
+            print("error: \(error)")
+        } else {
+            print("Error")
+        }
+    }
 ```
 
 * Шифрование карточных данных и создание криптограммы для отправки на сервер
@@ -127,6 +161,10 @@ class CheckoutViewController: UIViewController, D3DSDelegate {
         print("error: \(html)")
     }
 ```
+
+#### 4) Для завершения оплаты выполнить метод Post3ds
+
+Смотрите документацию по API: Платёж - [обработка 3-D Secure](https://developers.cloudpayments.ru/#obrabotka-3-d-secure).
 
 ### Подключение Apple Pay для клиентов CloudPayments
 

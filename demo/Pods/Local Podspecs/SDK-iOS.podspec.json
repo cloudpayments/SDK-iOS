@@ -17,7 +17,7 @@
   },
   "source_files": [
     "SDK-iOS",
-    "sdk/sdk/**/*.{h,m}"
+    "sdk/**/*.{h,m}"
   ],
   "requires_arc": true
 }
