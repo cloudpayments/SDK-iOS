@@ -36,8 +36,6 @@ NSString * const POST_BACK_URL = @"https://demo.cloudpayments.ru/WebFormPost/Get
     
     if (([response statusCode] == 200) || ([response statusCode] == 201)) {
         
-        [viewControllerD3DSDelegate authorizationCompletedWithMD:@"1" andPares:@"1"];
-        
         WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
         webView = [[WKWebView alloc] initWithFrame:viewControllerD3DSDelegate.view.frame configuration:configuration];
         [webView setNavigationDelegate: self];

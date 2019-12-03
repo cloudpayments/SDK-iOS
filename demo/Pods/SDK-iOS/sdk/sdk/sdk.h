@@ -5,10 +5,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <sdk/Card.h>
-#import <sdk/D3DS.h>
-#import <sdk/PKPaymentConverter.h>
-
 //! Project version number for sdk.
 FOUNDATION_EXPORT double sdkVersionNumber;
 

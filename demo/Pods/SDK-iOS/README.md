@@ -18,11 +18,23 @@ CloudPayments SDK позволяет интегрировать прием пл�
 ```
 pod 'SDK-iOS', :git =>  "https://github.com/cloudpayments/SDK-iOS", :branch => "master"
 ```
+
+Если ваш проект написан на языке Swift, вам так же необходимо создать файл моста {PROJECT_NAME}-Bridging-Header.h для использования классов из Objective-C и импортировать в нем классы которые вы планируете использовать:
+
+```
+#import <SDK-iOS/sdk/sdk/Card/Card.h> // Создание критограммы 
+#import <SDK-iOS/sdk/sdk/Card/Api/CPCardApi.h> // Получение информации о банке по номеру карты
+#import <SDK-iOS/sdk/sdk/3DS/D3DS.h> // Обработка 3DS формы
+#import <SDK-iOS/sdk/sdk/Utils/PKPaymentConverter.h> // Работа c Apple Pay
+```
+#### ЗАМЕЧАНИЕ 
+Чтобы использовать относительные пути к файлам в настройках проекта в переменную Header-Search Path добавьте следующее значение: "$(SOURCE_ROOT)/Pods"
+
 ### Структура проекта:
 
-* **api/** - Пример файлов для проведения платежа через ваш сервер
-* **demo/** - Пример реализации приложения с использованием SDK
-* **sdk/** - Исходный код SDK
+* **api** - Пример файлов для проведения платежа через ваш сервер
+* **demo** - Пример реализации приложения с использованием SDK
+* **sdk** - Исходный код SDK
 
 
 ### Подготовка к работе
@@ -57,6 +69,39 @@ Card.cardType(toString: Card.cardType(fromCardNumber: textField.text))
 
 ```
 
+* Определение банка эмитента
+
+```
+let api : CPCardApi = CPCardApi.init()
+        api.delegate = self
+        api.getBinInfo(cardNumber)
+
+	// Результат можно получить в методах делигата CPCardApiDelegate
+	func didFinish(_ info: BinInfo!) {
+        
+        if let bankName = info.bankName {
+            print("BankName: \(bankName)")
+        } else {
+            print("BankName is empty")
+        }
+        
+        if let logoUrl = info.logoUrl {
+            print("LogoUrl: \(logoUrl)")
+        } else {
+            print("LogoUrl is empty")
+        }
+     }
+    
+    func didFailWithError(_ message: String!) {
+        
+        if let error = message {
+            print("error: \(error)")
+        } else {
+            print("Error")
+        }
+    }
+```
+
 * Шифрование карточных данных и создание криптограммы для отправки на сервер
 
 ```
@@ -71,6 +116,8 @@ let cardCryptogramPacket = card.makeCryptogramPacket(cardNumber, andExpDate: exp
 var d3ds: D3DS = D3DS.init()
 d3ds.make3DSPayment(with: self, andAcsURLString: acsUrl, andPaReqString: paReq, andTransactionIdString: transactionId)
 ```
+#### ЗАМЕЧАНИЕ 
+Переменную var d3ds: D3DS лучше объявить как член класса который будет реализовывать делегата D3DSDelegate, в противном случае методы делегата могуть быть не вызванны, так как к моменту их вызова ссылка на экземпляр D3DS может быть автоматически удалена.
 
 ### Пример проведения платежа:
 
@@ -85,12 +132,12 @@ let cardCryptogramPacket = card.makeCryptogramPacket(cardNumber, andExpDate: exp
 
 #### 2) Выполнение запроса на проведения платежа через  API CloudPayments
 
-Платёж - [оплата по криптограмме](https://cloudpayments.ru/wiki/integration/instrumenti/api#pay_with_crypto).
+Платёж - [оплата по криптограмме](https://developers.cloudpayments.ru/#oplata-po-kriptogramme).
 
 Для привязки карты (платёж "в один клик")  используйте метод
-[оплату по токену](https://cloudpayments.ru/wiki/integration/instrumenti/api#paywithtoken).  
+[оплату по токену](https://developers.cloudpayments.ru/#oplata-po-tokenu-rekarring).  
 
-Токен можно получить при совершении оплаты по криптограмме, либо при получении  [уведомлений](https://cloudpayments.ru/wiki/integration/instrumenti/notice).
+Токен можно получить при совершении оплаты по криптограмме, либо при получении  [уведомлений](https://developers.cloudpayments.ru/#uvedomleniya).
 
 
 #### 3) Если необходимо, показать 3DS форму для подтверждения платежа
@@ -114,6 +161,10 @@ class CheckoutViewController: UIViewController, D3DSDelegate {
         print("error: \(html)")
     }
 ```
+
+#### 4) Для завершения оплаты выполнить метод Post3ds
+
+Смотрите документацию по API: Платёж - [обработка 3-D Secure](https://developers.cloudpayments.ru/#obrabotka-3-d-secure).
 
 ### Подключение Apple Pay для клиентов CloudPayments
 

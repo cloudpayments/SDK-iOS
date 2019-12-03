@@ -7,20 +7,7 @@
 
 - (void)getBinInfo:(NSString *)firstSixDigits
 {
-    
-    firstSixDigits = [firstSixDigits stringByReplacingOccurrencesOfString:@" " withString:@""];
-    
-    if (firstSixDigits.length < 6) {
-        if (self.delegate != nil)
-        {
-            [self.delegate didFailWithError: @"You must specify the first 6 digits of the card number"];
-        }
-        return;
-    }
-    
-    firstSixDigits = [firstSixDigits substringWithRange:NSMakeRange(0, 6)];
-    
-    NSURLSessionConfiguration *defaultSessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+  NSURLSessionConfiguration *defaultSessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration:defaultSessionConfiguration];
 
     NSURL *url = [NSURL URLWithString: [NSString stringWithFormat: @"https://widget.cloudpayments.ru/Home/BinInfo?firstSixDigits=%@", firstSixDigits]];
@@ -32,7 +19,7 @@
 
         NSDictionary *results = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
 
-        BOOL success = [results[@"Success"] boolValue];
+        BOOL success = results[@"Success"];
         
         if (success && results[@"Model"] != nil) {
             
@@ -50,9 +37,11 @@
 
         } else {
             
+            NSString *error = @"Unable to determine bank";
+            
             if (self.delegate != nil)
             {
-                [self.delegate didFailWithError: @"Unable to determine bank"];
+                //[self.delegate didFailWithError: error];
             }
         }
 
