@@ -166,11 +166,64 @@ class CheckoutViewController: UIViewController, D3DSDelegate {
 
 Смотрите документацию по API: Платёж - [обработка 3-D Secure](https://developers.cloudpayments.ru/#obrabotka-3-d-secure).
 
-### Подключение Apple Pay для клиентов CloudPayments
+### Оплата через Apple Pay для клиентов CloudPayments
 
-[О Apple Pay](https://cloudpayments.ru/docs/applepay)
+[О Apple Pay](https://developers.cloudpayments.ru/#apple-pay)
 
-[https://www.raywenderlich.com/87300/apple-pay-tutorial](https://www.raywenderlich.com/87300/apple-pay-tutorial) \- туториал, по подключению Apple Pay в приложение.
+#### 1) Создайте массив объектов PKPaymentSummaryItem и спользуя информацию о товарах выбранных Вашим клиентом
+```
+var paymentItems: [PKPaymentSummaryItem] = []
+        
+        for product in CartManager.shared.products {
+            let paymentItem = PKPaymentSummaryItem.init(label: product.name, amount: NSDecimalNumber(value: Int(product.price)!))
+            paymentItems.append(paymentItem)
+        }
+```
+#### 2) Укажите Ваш Apple Pay ID и допустимые платежные системы
+```
+let applePayMerchantID = "merchant.com.YOURDOMAIN" // Ваш ID для Apple Pay
+let paymentNetworks = [PKPaymentNetwork.visa, PKPaymentNetwork.masterCard] // Платежные системы для Apple Pay
+```
+#### 3) Проверьте доступны ли пользователю эти платежные системы
+```
+buttonApplePay.isHidden = !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: paymentNetworks) // Скрываем кнопку Apple Pay если пользователю недоступны указанные нами платежные системы
+```
+#### 4) Формируем и выполняем запрос для Apple Pay
+```
+let request = PKPaymentRequest()
+request.merchantIdentifier = applePayMerchantID
+request.supportedNetworks = paymentNetworks
+request.merchantCapabilities = PKMerchantCapability.capability3DS // Возможно использование 3DS
+request.countryCode = "RU" // Код страны
+request.currencyCode = "RUB" // Код валюты
+request.paymentSummaryItems = paymentItems
+let applePayController = PKPaymentAuthorizationViewController(paymentRequest: request)
+applePayController?.delegate = self
+self.present(applePayController!, animated: true, completion: nil)
+```
+#### 5) Обрабатываем ответ от Apple Pay
+```
+extension CheckoutViewController: PKPaymentAuthorizationViewControllerDelegate {
+    func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: @escaping ((PKPaymentAuthorizationStatus) -> Void)) {
+        completion(PKPaymentAuthorizationStatus.success)
+        
+        // Конвертируем объект PKPayment в строку криптограммы
+        guard let cryptogram = PKPaymentConverter.convert(toString: payment) else {
+            return
+        }
+               
+        // Используя методы API выполняем оплату по криптограмме
+        // (charge (для одностадийного платежа) или auth (для двухстадийного))
+        //charge(cardCryptogramPacket: cryptogram, cardHolderName: "")
+        auth(cardCryptogramPacket: cryptogram, cardHolderName: "")
+      
+    }
+    
+    func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+}
+```
 
 #### ВАЖНО:
 

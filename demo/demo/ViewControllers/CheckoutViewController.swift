@@ -55,8 +55,8 @@ class CheckoutViewController: UIViewController, D3DSDelegate, CPCardApiDelegate 
     private let network = NetworkService()
     
     // APPLE PAY
+    let applePayMerchantID = "merchant.com.YOURDOMAIN" // Ваш ID для Apple Pay
     let paymentNetworks = [PKPaymentNetwork.visa, PKPaymentNetwork.masterCard] // Платежные системы для Apple Pay
-    let applePayMerchantID = "merchant.com.YOURDOMAIN" // Ваш ID для Apple Pay!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -131,7 +131,14 @@ class CheckoutViewController: UIViewController, D3DSDelegate, CPCardApiDelegate 
     }
     
     @IBAction func onApplePayClick(_ sender: Any) {
-    
+        
+        // Получение информации о товарах выбранных пользователем
+        var paymentItems: [PKPaymentSummaryItem] = []
+        for product in CartManager.shared.products {
+            let paymentItem = PKPaymentSummaryItem.init(label: product.name, amount: NSDecimalNumber(value: Int(product.price)!))
+            paymentItems.append(paymentItem)
+        }
+           
         // Формируем запрос для Apple Pay
         let request = PKPaymentRequest()
         request.merchantIdentifier = applePayMerchantID
@@ -139,9 +146,7 @@ class CheckoutViewController: UIViewController, D3DSDelegate, CPCardApiDelegate 
         request.merchantCapabilities = PKMerchantCapability.capability3DS // Возможно использование 3DS
         request.countryCode = "RU" // Код страны
         request.currencyCode = "RUB" // Код валюты
-        request.paymentSummaryItems = [
-            PKPaymentSummaryItem(label: "Рубль", amount: NSDecimalNumber(value: total)) // Информация о товаре (название и цена)
-        ]
+        request.paymentSummaryItems = paymentItems
         let applePayController = PKPaymentAuthorizationViewController(paymentRequest: request)
         applePayController?.delegate = self
         self.present(applePayController!, animated: true, completion: nil)
