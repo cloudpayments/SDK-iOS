@@ -19,7 +19,7 @@ CloudPayments SDK позволяет интегрировать прием пл�
 pod 'SDK-iOS', :git =>  "https://github.com/cloudpayments/SDK-iOS", :branch => "master"
 ```
 
-Если ваш проект написан на языке Swift, вам так же необходимо создать файл моста {PROJECT_NAME}-Bridging-Header.h для использования классов из Objective-C и импортировать в нем классы которые вы планируете использовать:
+Если ваш проект написан на языке Swift, тогда для использования классов из Objective-C создайте файл моста {PROJECT_NAME}-Bridging-Header.h и импортируйте в нем классы которые вы планируете использовать:
 
 ```
 #import <SDK-iOS/sdk/sdk/Card/Card.h> // Создание критограммы 
@@ -121,16 +121,16 @@ d3ds.make3DSPayment(with: self, andAcsURLString: acsUrl, andPaReqString: paReq, 
 
 ### Пример проведения платежа:
 
-#### 1) Создание криптограммы
+#### 1) Создайте криптограмму карточных данных
 
 ```
-// Обязательно проверяйте входящие данные карты (номер, срок действия и cvc код) на корректность, иначе при попытке создания объекта CPCard мы получим исключение.
+// Обязательно проверяйте входящие данные карты (номер, срок действия и cvc код) на корректность, иначе при попытке создания объекта CPCard будет вызвано исключение.
 let card = Card()
 let cardCryptogramPacket = card.makeCryptogramPacket(cardNumber, andExpDate: expDate, andCVV: cvv, andMerchantPublicID: Constants.merchantPulicId)
 
 ```
 
-#### 2) Выполнение запроса на проведения платежа через  API CloudPayments
+#### 2) Выполните запрос на проведения платежа через API CloudPayments
 
 Платёж - [оплата по криптограмме](https://developers.cloudpayments.ru/#oplata-po-kriptogramme).
 
@@ -140,7 +140,7 @@ let cardCryptogramPacket = card.makeCryptogramPacket(cardNumber, andExpDate: exp
 Токен можно получить при совершении оплаты по криптограмме, либо при получении  [уведомлений](https://developers.cloudpayments.ru/#uvedomleniya).
 
 
-#### 3) Если необходимо, показать 3DS форму для подтверждения платежа
+#### 3) Если необходимо, покажите 3DS форму для подтверждения платежа
 
 ```
 var d3ds: D3DS = D3DS.init()
@@ -162,15 +162,15 @@ class CheckoutViewController: UIViewController, D3DSDelegate {
     }
 ```
 
-#### 4) Для завершения оплаты выполнить метод Post3ds
+#### 4) Для завершения оплаты выполните метод Post3ds
 
 Смотрите документацию по API: Платёж - [обработка 3-D Secure](https://developers.cloudpayments.ru/#obrabotka-3-d-secure).
 
-### Оплата через Apple Pay для клиентов CloudPayments
+### Оплата через Apple Pay с CloudPayments
 
-[О Apple Pay](https://developers.cloudpayments.ru/#apple-pay)
+[Об Apple Pay](https://developers.cloudpayments.ru/#apple-pay)
 
-#### 1) Создайте массив объектов PKPaymentSummaryItem и спользуя информацию о товарах выбранных Вашим клиентом
+#### 1) Создайте массив объектов PKPaymentSummaryItem используя информацию о товарах выбранных вашим клиентом
 ```
 var paymentItems: [PKPaymentSummaryItem] = []
         
@@ -179,16 +179,16 @@ var paymentItems: [PKPaymentSummaryItem] = []
             paymentItems.append(paymentItem)
         }
 ```
-#### 2) Укажите Ваш Apple Pay ID и допустимые платежные системы
+#### 2) Укажите ваш Apple Pay ID и допустимые платежные системы
 ```
 let applePayMerchantID = "merchant.com.YOURDOMAIN" // Ваш ID для Apple Pay
 let paymentNetworks = [PKPaymentNetwork.visa, PKPaymentNetwork.masterCard] // Платежные системы для Apple Pay
 ```
-#### 3) Проверьте доступны ли пользователю эти платежные системы
+#### 3) Проверьте, доступны ли пользователю эти платежные системы
 ```
-buttonApplePay.isHidden = !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: paymentNetworks) // Скрываем кнопку Apple Pay если пользователю недоступны указанные нами платежные системы
+buttonApplePay.isHidden = !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: paymentNetworks) // Скройте кнопку Apple Pay если пользователю недоступны указанные вами платежные системы
 ```
-#### 4) Формируем и выполняем запрос для Apple Pay
+#### 4) Создайте и выполните запрос к Apple Pay
 ```
 let request = PKPaymentRequest()
 request.merchantIdentifier = applePayMerchantID
@@ -207,12 +207,12 @@ extension CheckoutViewController: PKPaymentAuthorizationViewControllerDelegate {
     func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: @escaping ((PKPaymentAuthorizationStatus) -> Void)) {
         completion(PKPaymentAuthorizationStatus.success)
         
-        // Конвертируем объект PKPayment в строку криптограммы
+        // Конвертируйте объект PKPayment в строку криптограммы
         guard let cryptogram = PKPaymentConverter.convert(toString: payment) else {
             return
         }
                
-        // Используя методы API выполняем оплату по криптограмме
+        // Используйте методы API для выполнения оплаты по криптограмме
         // (charge (для одностадийного платежа) или auth (для двухстадийного))
         //charge(cardCryptogramPacket: cryptogram, cardHolderName: "")
         auth(cardCryptogramPacket: cryptogram, cardHolderName: "")
@@ -227,7 +227,7 @@ extension CheckoutViewController: PKPaymentAuthorizationViewControllerDelegate {
 
 #### ВАЖНО:
 
-При обработке успешного ответа от Apple Pay, необходимо выполнить переобразование объекта PKPayment в криптограмму для передачи в платежное API CloudPayments
+При обработке успешного ответа от Apple Pay, обязательно выполните переобразование объекта PKPayment в криптограмму для передачи в платежное API CloudPayments
 
 ```
 let cryptogram = PKPaymentConverter.convert(toString: payment) 
