@@ -131,7 +131,7 @@
 +(BOOL) isCardNumberValid: (NSString *) cardNumberString {
     NSString *cleanCardNumber = [Card cleanCreditCardNo:cardNumberString];
     
-    if (cleanCardNumber.length == 0) {
+    if (cleanCardNumber.length < 6 ) {
         return NO;
     }
     
