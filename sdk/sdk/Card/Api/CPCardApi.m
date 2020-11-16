@@ -1,4 +1,5 @@
 #import "CPCardApi.h"
+#import "Models/BinInfo.h"
 
 @interface CPCardApi (Private)
 @end
