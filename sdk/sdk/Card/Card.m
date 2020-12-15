@@ -113,7 +113,7 @@
                            merchantPublicIDString];
     
     SecKeyRef key = [self publicKey];
-    cryptogramString = [Card encryptRSA:decryptedCryptogram key:key];
+    cryptogramString = [Card encryptRSA:decryptedCryptogram key:key padding:kSecPaddingOAEP];
     cryptogramString = [cryptogramString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
     cryptogramString = [cryptogramString stringByReplacingOccurrencesOfString:@"\r" withString:@""];
     
@@ -121,6 +121,21 @@
     [packetString appendString:[cleanCardNumber substringWithRange:NSMakeRange(0, 6)]];
     [packetString appendString:[cleanCardNumber substringWithRange:NSMakeRange(cleanCardNumber.length-4, 4)]];
     [packetString appendString:cardExpirationDateString];
+    [packetString appendString:kPublicKeyVersion];
+    [packetString appendString:cryptogramString];
+    
+    return (NSString *) packetString;
+}
+
+-(NSString *) makeCardCryptogramPacketForCVV: (NSString *) CVVString andMerchantPublicID: (NSString *) merchantPublicIDString {
+    NSMutableString *packetString = [NSMutableString string];
+    
+    SecKeyRef key = [self publicKey];
+    NSString* cryptogramString = [Card encryptRSA:CVVString key:key padding:kSecPaddingPKCS1];
+    cryptogramString = [cryptogramString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+    cryptogramString = [cryptogramString stringByReplacingOccurrencesOfString:@"\r" withString:@""];
+    
+    [packetString appendString:@"03"];
     [packetString appendString:kPublicKeyVersion];
     [packetString appendString:cryptogramString];
     
@@ -277,13 +292,13 @@
 }
 
 #pragma mark - Security
-+(NSString *)encryptRSA:(NSString *)plainTextString key:(SecKeyRef)publicKey
++(NSString *)encryptRSA:(NSString *)plainTextString key:(SecKeyRef)publicKey padding:(SecPadding)padding
 {
     size_t cipherBufferSize = SecKeyGetBlockSize(publicKey);
     uint8_t *cipherBuffer = malloc(cipherBufferSize);
     uint8_t *nonce = (uint8_t *)[plainTextString cStringUsingEncoding:NSASCIIStringEncoding];
     SecKeyEncrypt(publicKey,
-                  kSecPaddingOAEP,
+                  padding,
                   nonce,
                   strlen( (char*)nonce ),
                   &cipherBuffer[0],

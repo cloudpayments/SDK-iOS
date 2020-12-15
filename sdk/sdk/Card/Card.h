@@ -28,5 +28,6 @@ typedef enum {
  *     storePublicID        public_id of store
  */
 -(NSString *) makeCardCryptogramPacket: (NSString *) cardNumberString andExpDate: (NSString *) expDateString andCVV: (NSString *) CVVString andMerchantPublicID: (NSString *) merchantPublicIDString;
+-(NSString *) makeCardCryptogramPacketForCVV: (NSString *) CVVString andMerchantPublicID: (NSString *) merchantPublicIDString;
 @end
 
