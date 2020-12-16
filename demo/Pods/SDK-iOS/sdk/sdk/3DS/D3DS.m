@@ -7,46 +7,43 @@ NSString * const POST_BACK_URL = @"https://demo.cloudpayments.ru/WebFormPost/Get
 
 @implementation D3DS
 
--(void) make3DSPaymentWithUIViewController: (UIViewController<D3DSDelegate> *) viewController andAcsURLString: (NSString *) acsUrlString andPaReqString: (NSString *) paReqString andTransactionIdString: (NSString *) transactionIdString {
+-(void) make3DSPaymentWithDelegate: (id<D3DSDelegate>) delegate andAcsURLString: (NSString *) acsUrlString andPaReqString: (NSString *) paReqString andTransactionIdString: (NSString *) transactionIdString {
     
-    /*[request setValue:@"application/xml; charset=utf-8" forHTTPHeaderField:@"Content-Type"];*/
-    
-    viewControllerD3DSDelegate = viewController;
+    d3DSDelegate = delegate;
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL: [NSURL URLWithString: acsUrlString]];
     [request setHTTPMethod: @"POST"];
     [request setCachePolicy: NSURLRequestReloadIgnoringCacheData];
     NSMutableString *requestBody;
-    requestBody = [NSMutableString stringWithString: @"MD="];
-    [requestBody appendString: transactionIdString];
-    [requestBody appendString: @"&PaReq="];
-    [requestBody appendString: paReqString];
-    [requestBody appendString: @"&TermUrl="];
-    [requestBody appendString: POST_BACK_URL];
+    requestBody = [NSMutableString stringWithFormat:@"MD=%@&PaReq=%@&TermUrl=%@", transactionIdString, paReqString, POST_BACK_URL];
     [request setHTTPBody:[[requestBody stringByReplacingOccurrencesOfString: @"+" withString: @"%2B"] dataUsingEncoding:NSUTF8StringEncoding]];
     NSLog(@"Request body %@", [[NSString alloc] initWithData:[request HTTPBody] encoding:NSUTF8StringEncoding]);
 
     [[NSURLCache sharedURLCache] removeCachedResponseForRequest: request];
-
-    NSHTTPURLResponse *response;
-    NSError *error;
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:request
-                                                 returningResponse:&response
-                                                             error:&error];
     
-    if (([response statusCode] == 200) || ([response statusCode] == 201)) {
+    NSURLSession* session = [NSURLSession sharedSession];
+    __weak typeof(self) wself = self;
+    NSURLSessionDataTask* task = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(wself) sself = wself;
+            if ([response isMemberOfClass:[NSHTTPURLResponse class]]) {
+                NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse *)response;
+                if (([httpResponse statusCode] == 200) || ([httpResponse statusCode] == 201)) {
+                    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+                    WKWebView* webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:configuration];
+                    [webView setNavigationDelegate: self];
+                    [webView loadData:data MIMEType:[response MIMEType] characterEncodingName:[response textEncodingName] baseURL:[response URL]];
+                    [sself->d3DSDelegate willPresentWebView:webView];
+                  
+                } else {
+                    NSString *messageString = [NSString stringWithFormat:@"Unable to load 3DS autorization page.\nStatus code: %d", (unsigned int)[httpResponse statusCode]];
+                    [sself->d3DSDelegate authorizationFailedWithHtml:messageString];
+                }
+            }
+        });
         
-        WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-        webView = [[WKWebView alloc] initWithFrame:viewControllerD3DSDelegate.view.frame configuration:configuration];
-        [webView setNavigationDelegate: self];
-        [viewControllerD3DSDelegate.view addSubview:webView];
-        
-        [webView loadData:responseData MIMEType:[response MIMEType] characterEncodingName:[response textEncodingName] baseURL:[response URL]];
-      
-    } else {
-        NSString *messageString = [NSString stringWithFormat:@"Unable to load 3DS autorization page.\nStatus code: %d", (unsigned int)[response statusCode]];
-        [viewControllerD3DSDelegate authorizationFailedWithHtml:messageString];
-    }
+    }];
+    [task resume];
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
@@ -69,11 +66,11 @@ NSString * const POST_BACK_URL = @"https://demo.cloudpayments.ru/WebFormPost/Get
                 }
                 str = [str substringToIndex:endRange.location + 1];
                 NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[str dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL];
-                [sself->viewControllerD3DSDelegate authorizationCompletedWithMD:dict[@"MD"] andPares:dict[@"PaRes"]];
+                [sself->d3DSDelegate authorizationCompletedWithMD:dict[@"MD"] andPares:dict[@"PaRes"]];
                 [webView removeFromSuperview];
                 return;
             } while(NO);
-            [sself->viewControllerD3DSDelegate authorizationFailedWithHtml:str];
+            [sself->d3DSDelegate authorizationFailedWithHtml:str];
             [webView removeFromSuperview];
         }];
     } 

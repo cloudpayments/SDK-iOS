@@ -7,6 +7,10 @@ import UIKit
 import PassKit
 
 class CheckoutViewController: UIViewController, D3DSDelegate, CPCardApiDelegate {
+    func willPresent(_ webView: WKWebView!) {
+        webView.frame = self.view.bounds
+        self.view.addSubview(webView)
+    }
 
     func didFinish(_ info: BinInfo!) {
         
@@ -150,6 +154,10 @@ class CheckoutViewController: UIViewController, D3DSDelegate, CPCardApiDelegate 
         let applePayController = PKPaymentAuthorizationViewController(paymentRequest: request)
         applePayController?.delegate = self
         self.present(applePayController!, animated: true, completion: nil)
+    }
+    
+    deinit {
+        print("deallocated: %@", self)
     }
 }
 

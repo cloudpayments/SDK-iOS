@@ -10,11 +10,11 @@ PODS:
 DEPENDENCIES:
   - Alamofire
   - AlamofireObjectMapper
-  - SDK-iOS (from `../sdk`)
+  - SDK-iOS (from `https://github.com/cloudpayments/SDK-iOS`, branch `fix/d3ds`)
   - SwiftyJSON
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
     - Alamofire
     - AlamofireObjectMapper
     - ObjectMapper
@@ -22,15 +22,21 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   SDK-iOS:
-    :path: "../sdk"
+    :branch: fix/d3ds
+    :git: https://github.com/cloudpayments/SDK-iOS
+
+CHECKOUT OPTIONS:
+  SDK-iOS:
+    :commit: 227d873c07736077b9840d9f9cc659d00dfa0795
+    :git: https://github.com/cloudpayments/SDK-iOS
 
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   AlamofireObjectMapper: 92b6ce2423a9d159e686f6a1d514a009bf903ddc
   ObjectMapper: 0d4402610f4e468903ae64629eec4784531e5c51
-  SDK-iOS: 73d61f1cc5191d73f34e7eacc73f4acd74a104b7
+  SDK-iOS: 3d1bb56c31abedf01c122daff14324472ed393e6
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
 
-PODFILE CHECKSUM: 11593f2034a04e077197e75718d03b58693bb3f3
+PODFILE CHECKSUM: 471265d118de1d7764bda5e300a77548db036073
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.3
