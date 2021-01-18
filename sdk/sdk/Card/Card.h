@@ -22,10 +22,10 @@ typedef enum {
 
 /**
  * Create cryptogram
- *    cardNumberString    valid card number stirng
- *    expDateString         string in format YYMM
- *     CVVString            3-digit number
- *     storePublicID        public_id of store
+ *    cardNumberString        valid card number stirng
+ *    expDateString           string in format MM/YY
+ *    CVVString               3-digit number
+ *    merchantPublicIDString  public_id of store
  */
 -(NSString *) makeCardCryptogramPacket: (NSString *) cardNumberString andExpDate: (NSString *) expDateString andCVV: (NSString *) CVVString andMerchantPublicID: (NSString *) merchantPublicIDString;
 -(NSString *) makeCardCryptogramPacketForCVV: (NSString *) CVVString andMerchantPublicID: (NSString *) merchantPublicIDString;
