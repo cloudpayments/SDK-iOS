@@ -1,3 +1,4 @@
+# Поддержка этой версии SDK заканчивается 31.12.2021, рекомендуем перейти на новую версию: https://github.com/cloudpayments/CloudPayments-SDK-iOS
 # CloudPayments SDK for iOS 
 
 CloudPayments SDK позволяет интегрировать прием платежей в мобильные приложение для платформы iOS.
